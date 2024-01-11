@@ -1,11 +1,52 @@
 $fn = 64;
 
-//vars
+//VARS---
+//uchyt
 diera_r = 3;
 stena_hrubka = 2;
+//pant
+pant_dlzka = 30;
+pant_sirka = 15;
+pant_hrubka = 10/2;
 
 
-uchyt();
+translate([50, 0, 0])
+    uchyt();
+
+pant(3);
+
+
+//Moduly---
+module pant(segmenty) {
+    //prava strana
+    cube([pant_dlzka, pant_sirka-pant_hrubka, pant_hrubka]);
+    for (x = [0:segmenty-1]) {
+        if ((-1)^x == -1) { // -1 -> kazde parne opakovanie
+            translate([x*(pant_dlzka/segmenty), pant_sirka, pant_hrubka]) {
+                rotate([0, 90])
+                    cylinder(r=pant_hrubka, h=(pant_dlzka/segmenty)*0.98);
+                translate([0, -pant_hrubka*1.01, -pant_hrubka])
+                    cube([(pant_dlzka/segmenty)*0.98, pant_hrubka*1.01, pant_hrubka]);
+            }
+        }
+    }
+    //lava strana
+    translate([0, pant_sirka*3]){
+    scale([1, -1]) {
+        cube([pant_dlzka, pant_sirka-pant_hrubka, pant_hrubka]);
+        for (x = [0:segmenty-1]) {
+            if ((-1)^x == 1) { // 1 -> kazde neparne opakovanie
+                translate([x*(pant_dlzka/segmenty), pant_sirka, pant_hrubka]) {
+                    rotate([0, 90])
+                        cylinder(r=pant_hrubka, h=(pant_dlzka/segmenty)*0.98);
+                    translate([0, -pant_hrubka*1.01, -pant_hrubka])
+                        cube([(pant_dlzka/segmenty)*0.98, pant_hrubka*1.01, pant_hrubka]);
+                }
+            }
+        }
+    }
+    }
+}
 
 module uchyt() {
     difference() {
@@ -15,7 +56,8 @@ module uchyt() {
     }
 }
 
-//snippets
+
+//Snippets---
 module cylinder_hollow(r_out, r_in, h=1, r1_out, r2_out, r1_in, r2_in, center=false) {
     difference() {
         cylinder(r=r_out, r1=r1_out, r2=r2_out, h=h, center=center);
